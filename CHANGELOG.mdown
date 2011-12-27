@@ -1,3 +1,11 @@
+## 0.3.2 (December 27, 2011)
+
+Features:
+  - Added get_alternative_for_user for returning users that don't take part in AB tests
+
+Bugfixes :
+  - Complex numbers conversion exception handling
+
 ## 0.3.1 (November 19, 2011)
 
 Features:
