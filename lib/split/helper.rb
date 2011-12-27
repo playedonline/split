@@ -56,6 +56,23 @@ module Split
       session[:split] ||= {}
     end
 
+    def get_alternative_for_user(experiment_name, *alternatives)
+      experiment = Split::Experiment.find_or_create(experiment_name, *alternatives)
+      if experiment.winner
+        ret = experiment.winner.name
+      else
+        if forced_alternative = override(experiment.name, alternatives)
+          ret = forced_alternative
+        else
+          if ab_user[experiment.key]
+            ret = ab_user[experiment.key]
+          else
+            ret = nil
+          end
+        end
+      end
+    end
+
     def exclude_visitor?
       is_robot? or is_ignored_ip_address?
     end
