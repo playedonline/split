@@ -25,11 +25,20 @@ module Split
       end
 
       def round(number, precision = 2)
-        BigDecimal.new(number.to_s).round(precision).to_f
+        begin
+          BigDecimal.new(number.to_s).round(precision).to_f
+        rescue => ex
+          0.0
+        end
       end
 
       def confidence_level(z_score)
-        z = z_score.to_f
+        begin
+          z=z_score.to_f
+        rescue => ex
+          z=0.0
+        end
+
         if z > 0.0
           if z < 1.96
             'no confidence'
