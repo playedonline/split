@@ -40,7 +40,13 @@ module Split
       if alternative_name = ab_user[experiment.key]
         alternative = Split::Alternative.new(alternative_name, experiment_name)
         alternative.increment_completion
-        cookie[:split] = JSON.parse(cookie[:split]).delete(experiment_name).to_json if options[:reset]
+
+        if options[:reset]
+          cookie_val = cookies[:split] || Hash.new.to_json
+          hsh = JSON.parse(cookie_val)
+          hsh.delete(experiment_name)
+          cookies[:split] = {:value => hsh.to_json, :expires => 1.year.from_now.utc}
+        end
       end
     end
 
@@ -50,12 +56,17 @@ module Split
 
     def begin_experiment(experiment, alternative_name)
       #ab_user[experiment.key] = alternative_name
-      cookie[:split] = JSON.parse(cookie[:split]).store(experiment.key, experiment_name).to_json
+      cookie_val = cookies[:split] || Hash.new.to_json
+      hsh = JSON.parse(cookie_val)
+      hsh.store(experiment.key, alternative_name)
+
+      cookies[:split] = {:value => hsh.to_json, :expires => 1.year.from_now.utc}
     end
 
     def ab_user
       #session[:split] ||= {}
-      JSON.parse(cookie[:split])
+      cookie_val = cookies[:split] || Hash.new.to_json
+      JSON.parse(cookie_val)
     end
 
     def get_alternative_for_user(experiment_name, *alternatives)
