@@ -71,7 +71,7 @@ module Split
 
     def get_alternative_for_user(experiment_name, *alternatives)
       experiment = Split::Experiment.find_or_create(experiment_name, *alternatives)
-      if experiment.winner
+      if experiment.winner && ab_user[experiment.key].present?
         ret = experiment.winner.name
       else
         if forced_alternative = override(experiment.name, alternatives)
